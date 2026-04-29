@@ -1,7 +1,5 @@
-# requirements.txt
 streamlit
 pandas
 numpy
 plotly
 shapely
-streamlit-plotly-events
