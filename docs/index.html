@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>생활물가 선행경보 대시보드</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --blue: #2563eb;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --macro: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 44px 20px 56px;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 38px;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #991b1b;
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 38px;
+      line-height: 1.2;
+      letter-spacing: -0.045em;
+    }
+
+    .subtitle {
+      max-width: 860px;
+      margin: 0;
+      color: #374151;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 17px;
+      min-height: 106px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .metric-label {
+      color: #4b5563;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 780;
+      letter-spacing: -0.03em;
+    }
+
+    .section {
+      margin-top: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      letter-spacing: -0.035em;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .feature {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      background: #fafafa;
+    }
+
+    .feature strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 16px;
+    }
+
+    .feature p {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 6px 0 20px;
+    }
+
+    .tab {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .mock {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .map-box {
+      min-height: 300px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 58% 48%, rgba(245, 158, 11, .40) 0 8%, transparent 9%),
+        radial-gradient(circle at 48% 35%, rgba(239, 68, 68, .38) 0 7%, transparent 8%),
+        radial-gradient(circle at 42% 58%, rgba(245, 158, 11, .32) 0 9%, transparent 10%),
+        radial-gradient(circle at 53% 70%, rgba(37, 99, 235, .18) 0 8%, transparent 9%),
+        linear-gradient(135deg, #eef2ff, #fef3c7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-box::after {
+      content: "지도 탭 · 지역별 위험점수 0~100 시각화";
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      background: rgba(255,255,255,.90);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .side-panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      background: #ffffff;
+    }
+
+    .side-panel h3 {
+      margin: 0 0 16px;
+      font-size: 19px;
+    }
+
+    .mini-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .mini-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .mini-card b {
+      font-size: 18px;
+    }
+
+    .formula {
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+      line-height: 1.75;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+
+    .notice {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: #fef3c7;
+      color: #78350f;
+      line-height: 1.7;
+      font-size: 15px;
+      border: 1px solid #fde68a;
+    }
+
+    .run {
+      background: #111827;
+      color: #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+      overflow-x: auto;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .blue { color: var(--blue); }
+    .orange { color: var(--orange); }
+    .red { color: var(--red); }
+    .macro { color: var(--macro); }
+
+    @media (max-width: 860px) {
+      .page {
+        padding: 24px 14px 40px;
+      }
+
+      .hero {
+        padding: 26px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 29px;
+      }
+
+      .subtitle {
+        font-size: 15.5px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .feature-grid,
+      .mock {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 23px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mini-row {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <span class="badge">📊 Streamlit Dashboard Prototype</span>
+      <h1>생활물가 선행경보 대시보드</h1>
+      <p class="subtitle">
+        지역별 생활물가 부담을 실제 위험점수와 예측 위험점수로 나누어 확인하는 정책지원형 대시보드입니다.
+        지역 물가 흐름과 거시 금융환경을 종합해 선행압력지수를 계산하고, 분기별 위험 수준을 지도·순위·상세 화면으로 제공합니다.
+      </p>
+
+      <div class="grid">
+        <div class="metric">
+          <div class="metric-label">위험점수 범위</div>
+          <div class="metric-value">0~100</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">분석 단위</div>
+          <div class="metric-value">지역 × 분기</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">주요 조정값</div>
+          <div class="metric-value">λ</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">표시 방식</div>
+          <div class="metric-value">지도 · 순위</div>
+        </div>
+      </div>
+
+      <div class="pill-row">
+        <span class="pill">지역별 위험 분포</span>
+        <span class="pill">예측-실제 비교</span>
+        <span class="pill">선행압력 조정</span>
+        <span class="pill">변수별 기여도</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>대시보드 화면 구성</h2>
+      <div class="tabs">
+        <span class="tab">🗺️ 지도</span>
+        <span class="tab">📊 순위</span>
+        <span class="tab">🔍 지역 상세</span>
+        <span class="tab">📘 지표 설명</span>
+      </div>
+
+      <div class="mock">
+        <div class="map-box"></div>
+
+        <aside class="side-panel">
+          <h3>지역 선택 예시</h3>
+          <div class="mini-row">
+            <div class="mini-card">
+              <span>실제 점수</span>
+              <b class="blue">68.4</b>
+            </div>
+            <div class="mini-card">
+              <span>예측 점수</span>
+              <b class="red">71.2</b>
+            </div>
+          </div>
+          <div class="mini-row">
+            <div class="mini-card">
+              <span>예측 차이</span>
+              <b>+2.8</b>
+            </div>
+            <div class="mini-card">
+              <span>선행압력</span>
+              <b class="orange">+6.1</b>
+            </div>
+          </div>
+          <p style="color:#6b7280; line-height:1.65; font-size:14px;">
+            실제 앱에서는 지도에서 지역을 클릭하거나 목록에서 지역을 선택하면 상세 지표가 갱신됩니다.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>주요 기능</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <strong>1. 지역별 위험 지도</strong>
+          <p>전국 시도별 생활물가 위험점수를 0~100 기준 색상으로 표시합니다. 선택 지역은 경계선을 강조합니다.</p>
+        </div>
+        <div class="feature">
+          <strong>2. 지역 순위 비교</strong>
+          <p>실제 위험점수 또는 예측 위험점수 기준으로 지역별 순위를 비교합니다.</p>
+        </div>
+        <div class="feature">
+          <strong>3. 지역 상세 분석</strong>
+          <p>선택 지역의 실제 점수, 예측 점수, 예측 오차, 선행압력, 시계열 추이를 확인합니다.</p>
+        </div>
+        <div class="feature">
+          <strong>4. 변수별 기여도</strong>
+          <p>지역 물가 흐름과 거시 금융환경 변수가 예측 위험점수에 어떤 방향으로 영향을 줬는지 보여줍니다.</p>
+        </div>
+        <div class="feature">
+          <strong>5. λ 조정</strong>
+          <p>선행압력지수를 예측 위험점수에 얼마나 반영할지 조정합니다.</p>
+        </div>
+        <div class="feature">
+          <strong>6. 경로 가중치 조정</strong>
+          <p><span class="blue">지역 물가 흐름</span>과 <span class="macro">거시 금융환경</span>의 반영 비중을 조정합니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>지표 산출 구조</h2>
+      <div class="formula">
+        조정 선행압력지수 = 기본 선행압력지수 × λ<br />
+        예측 위험점수 = 이전 분기 위험점수 + 조정 선행압력지수
+      </div>
+
+      <div class="notice">
+        위험점수는 값이 높을수록 생활물가 부담 위험이 큰 지역을 의미합니다.
+        0~40점은 낮음, 40~70점은 주의, 70~100점은 높음 수준으로 해석합니다.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>로컬 실행 방법</h2>
+      <pre class="run"><code>git clone https://github.com/hwangsueun/living-price-dashboard.git
+cd living-price-dashboard
+pip install -r requirements.txt
+streamlit run app.py</code></pre>
+
+      <div class="notice">
+        현재 구현은 Streamlit 기반입니다. GitHub Pages는 정적 HTML만 표시하므로 이 페이지는 프로젝트 소개용입니다.
+        실제 대시보드 앱을 웹에서 실행하려면 Streamlit Community Cloud, Render, Railway, Hugging Face Spaces 같은 실행형 배포 플랫폼을 사용해야 합니다.
+      </div>
+    </section>
+  </main>
+</body>
+</html>
