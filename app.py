@@ -967,7 +967,7 @@ def prepare_geojson(geo):
 
 def build_map(display_df: pd.DataFrame, status: str, selected_region: str):
     """
-    Plotly Choroplethmapbox 기반 지도.
+    Plotly Choroplethmap 기반 지도.
     iframe 없이 직접 렌더링 → Folium 대비 훨씬 빠름.
     모든 지역을 점수에 따라 색칠하고, 선택 지역만 경계선 강조.
     """
@@ -998,7 +998,8 @@ def build_map(display_df: pd.DataFrame, status: str, selected_region: str):
 
     fig = go.Figure()
 
-    fig.add_trace(go.Choroplethmapbox(
+    # ── 수정: Choroplethmapbox → Choroplethmap ──────────────────
+    fig.add_trace(go.Choroplethmap(
         geojson=gj,
         locations=locs,
         z=zvals,
@@ -1021,10 +1022,11 @@ def build_map(display_df: pd.DataFrame, status: str, selected_region: str):
         name="",
     ))
 
+    # ── 수정: mapbox_* → map_* ──────────────────────────────────
     fig.update_layout(
-        mapbox_style="carto-positron",
-        mapbox_zoom=5.5,
-        mapbox_center={"lat": 36.5, "lon": 127.5},
+        map_style="carto-positron",
+        map_zoom=5.5,
+        map_center={"lat": 36.5, "lon": 127.5},
         height=560,
         margin=dict(l=0, r=10, t=0, b=0),
         paper_bgcolor="white",
@@ -1651,7 +1653,6 @@ def find_region_by_point(lat: float, lng: float) -> Optional[str]:
     pt = Point(lng, lat)
     for feat in raw_geo.get("features", []):
         props = feat.get("properties", {})
-        # region_short 가 있으면 우선, 없으면 region 필드를 정규화해서 사용
         raw_name = props.get("region_short") or props.get("region") or ""
         rname = normalize_region_name(raw_name)
         if not rname:
@@ -1682,15 +1683,15 @@ with tab_map:
                 )
 
                 if fig is not None:
+                    # ── 수정: use_container_width=True → width='stretch' ──
                     event = st.plotly_chart(
                         fig,
-                        use_container_width=True,
+                        width='stretch',
                         key="choropleth_map",
                         on_select="rerun",
                         selection_mode="points",
                     )
 
-                    # 클릭 이벤트에서 지역명 추출
                     points = (
                         event.selection.get("points", [])
                         if event and hasattr(event, "selection") and event.selection
@@ -1759,9 +1760,10 @@ with tab_rank:
 
     rank_fig = build_rank_bar(display_df, status)
     if rank_fig is not None:
+        # ── 수정: use_container_width=True → width='stretch' ──
         st.plotly_chart(
             rank_fig,
-            use_container_width=True,
+            width='stretch',
             config=fixed_chart_config(),
         )
 
@@ -1828,7 +1830,8 @@ with tab_rank:
             if pd.api.types.is_numeric_dtype(table_df[c]):
                 table_df[c] = table_df[c].round(2)
 
-    st.dataframe(table_df, use_container_width=True, hide_index=True)
+    # ── 수정: use_container_width=True → width='stretch' ──
+    st.dataframe(table_df, width='stretch', hide_index=True)
 
     if status == "actual_with_prediction":
         st.caption("오차 수준은 현재 선택한 λ와 가중치 기준으로 다시 계산됩니다. 우수는 오차가 작고, 낮음은 오차가 큰 지역입니다.")
@@ -1885,9 +1888,10 @@ with tab_detail:
     trend_fig = build_trend_chart(tv, selected_quarter, selected_region)
 
     if trend_fig is not None:
+        # ── 수정: use_container_width=True → width='stretch' ──
         st.plotly_chart(
             trend_fig,
-            use_container_width=True,
+            width='stretch',
             config=chart_config(show_modebar=True),
         )
     else:
@@ -1898,13 +1902,15 @@ with tab_detail:
     contrib_fig, contrib_table = build_contribution_chart(selected_region, selected_quarter, weights, lambda_pressure)
 
     if contrib_fig is not None:
+        # ── 수정: use_container_width=True → width='stretch' ──
         st.plotly_chart(
             contrib_fig,
-            use_container_width=True,
+            width='stretch',
             config=fixed_chart_config(),
         )
         if contrib_table is not None:
-            st.dataframe(contrib_table, use_container_width=True, hide_index=True)
+            # ── 수정: use_container_width=True → width='stretch' ──
+            st.dataframe(contrib_table, width='stretch', hide_index=True)
     else:
         st.info("해당 지역·분기의 변수별 기여도 데이터가 없습니다.")
 
